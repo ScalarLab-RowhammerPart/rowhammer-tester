@@ -128,43 +128,43 @@ class RowHammerSoC(SoCCore):
         self.add_csr("leds")
 
         # SDRAM PHY --------------------------------------------------------------------------------
-        if sdram_module_spd_file is not None:
-            self.logger.info('Using DRAM module {} data: {}'.format(colorer('SPD'), sdram_module_spd_file))
-            with open(sdram_module_spd_file, 'rb') as f:
-                spd_data = f.read()
-            module = SDRAMModule.from_spd_data(spd_data, self.sys_clk_freq)
-        else:
-            ratio = self.get_sdram_ratio()
-            self.logger.info('Using DRAM module {} ratio {}'.format(
-                colorer(sdram_module_cls.__name__), colorer(ratio)))
-            module = sdram_module_cls(self.sys_clk_freq, ratio, speedgrade=sdram_module_speedgrade)
+        # if sdram_module_spd_file is not None:
+        #     self.logger.info('Using DRAM module {} data: {}'.format(colorer('SPD'), sdram_module_spd_file))
+        #     with open(sdram_module_spd_file, 'rb') as f:
+        #         spd_data = f.read()
+        #     module = SDRAMModule.from_spd_data(spd_data, self.sys_clk_freq)
+        # else:
+        #     ratio = self.get_sdram_ratio()
+        #     self.logger.info('Using DRAM module {} ratio {}'.format(
+        #         colorer(sdram_module_cls.__name__), colorer(ratio)))
+        #     module = sdram_module_cls(self.sys_clk_freq, ratio, speedgrade=sdram_module_speedgrade)
 
-        if args.sim:
-            # Use the hardware platform to retrieve values for simulation
-            hw_pads = self.get_platform().request('ddram')
-            core_config = dict(
-                sdram_module_nb = len(hw_pads.dq) // 8,  # number of byte groups
-                sdram_rank_nb =   len(hw_pads.cs_n),     # number of ranks
-                sdram_module =    module,
-                memtype =         module.memtype,
-            )
-            # Add IO pins
-            self.platform.add_extension(get_dram_ios(core_config))
+        # if args.sim:
+        #     # Use the hardware platform to retrieve values for simulation
+        #     hw_pads = self.get_platform().request('ddram')
+        #     core_config = dict(
+        #         sdram_module_nb = len(hw_pads.dq) // 8,  # number of byte groups
+        #         sdram_rank_nb =   len(hw_pads.cs_n),     # number of ranks
+        #         sdram_module =    module,
+        #         memtype =         module.memtype,
+        #     )
+        #     # Add IO pins
+        #     self.platform.add_extension(get_dram_ios(core_config))
 
-            phy_settings   = get_sdram_phy_settings(
-                memtype    = module.memtype,
-                data_width = core_config["sdram_module_nb"]*8,
-                clk_freq   = sys_clk_freq)
+        #     phy_settings   = get_sdram_phy_settings(
+        #         memtype    = module.memtype,
+        #         data_width = core_config["sdram_module_nb"]*8,
+        #         clk_freq   = sys_clk_freq)
 
-            self.submodules.ddrphy = SDRAMPHYModel(
-                module    = module,
-                settings  = phy_settings,
-                clk_freq  = sys_clk_freq,
-                verbosity = 3,
-            )
-        else:  # hardware
-            self.submodules.ddrphy = self.get_ddrphy()
-        self.add_csr("ddrphy")
+        #     self.submodules.ddrphy = SDRAMPHYModel(
+        #         module    = module,
+        #         settings  = phy_settings,
+        #         clk_freq  = sys_clk_freq,
+        #         verbosity = 3,
+        #     )
+        # else:  # hardware
+        #     self.submodules.ddrphy = self.get_ddrphy()
+        # self.add_csr("ddrphy")
 
         # SDRAM Controller--------------------------------------------------------------------------
         class ControllerDynamicSettings(Module, AutoCSR, AutoDoc, ModuleDoc):
@@ -179,20 +179,20 @@ class RowHammerSoC(SoCCore):
         controller_settings.with_refresh = self.controller_settings.refresh.storage
         controller_settings.refresh_cls = SyncableRefresher
 
-        assert self.ddrphy.settings.memtype == module.memtype, \
-            'Wrong DRAM module type: {} vs {}'.format(self.ddrphy.settings.memtype, module.memtype)
-        self.add_sdram("sdram",
-            phy                     = self.ddrphy,
-            module                  = module,
-            origin                  = self.mem_map["main_ram"],
-            size                    = kwargs.get("max_sdram_size", 0x40000000),
-            l2_cache_size           = 256,
-            controller_settings     = controller_settings
-        )
+        # assert self.ddrphy.settings.memtype == module.memtype, \
+        #     'Wrong DRAM module type: {} vs {}'.format(self.ddrphy.settings.memtype, module.memtype)
+        # self.add_sdram("sdram",
+        #     phy                     = self.ddrphy,
+        #     module                  = module,
+        #     origin                  = self.mem_map["main_ram"],
+        #     size                    = kwargs.get("max_sdram_size", 0x40000000),
+        #     l2_cache_size           = 256,
+        #     controller_settings     = controller_settings
+        # )
 
-        # CPU will report that leveling finished by writing to ddrctrl CSRs
-        self.submodules.ddrctrl = LiteDRAMCoreControl()
-        self.add_csr("ddrctrl")
+        # # CPU will report that leveling finished by writing to ddrctrl CSRs
+        # self.submodules.ddrctrl = LiteDRAMCoreControl()
+        # self.add_csr("ddrctrl")
 
         # Ethernet / Etherbone ---------------------------------------------------------------------
         if not args.sim:
@@ -211,95 +211,95 @@ class RowHammerSoC(SoCCore):
             self.submodules.etherbone = LiteEthEtherbone(self.ethcore.udp, self.udp_port, mode="master")
             self.add_wb_master(self.etherbone.wishbone.bus)
 
-        # Rowhammer --------------------------------------------------------------------------------
-        self.submodules.rowhammer_dma = LiteDRAMDMAReader(self.sdram.crossbar.get_port())
-        self.submodules.rowhammer = RowHammerDMA(self.rowhammer_dma)
-        self.add_csr("rowhammer")
+        # # Rowhammer --------------------------------------------------------------------------------
+        # self.submodules.rowhammer_dma = LiteDRAMDMAReader(self.sdram.crossbar.get_port())
+        # self.submodules.rowhammer = RowHammerDMA(self.rowhammer_dma)
+        # self.add_csr("rowhammer")
 
-        # Bist -------------------------------------------------------------------------------------
-        if not args.no_memory_bist:
-            pattern_data_size  = int(args.pattern_data_size, 0)
-            phy_settings       = self.sdram.controller.settings.phy
-            pattern_data_width = phy_settings.dfi_databits * phy_settings.nphases
-            pattern_length     = pattern_data_size//(pattern_data_width//8)
+        # # Bist -------------------------------------------------------------------------------------
+        # if not args.no_memory_bist:
+        #     pattern_data_size  = int(args.pattern_data_size, 0)
+        #     phy_settings       = self.sdram.controller.settings.phy
+        #     pattern_data_width = phy_settings.dfi_databits * phy_settings.nphases
+        #     pattern_length     = pattern_data_size//(pattern_data_width//8)
 
-            assert pattern_data_size % (pattern_data_width//8) == 0, \
-                'Pattern data memory size must be multiple of {} bytes'.format(pattern_data_width//8)
+        #     assert pattern_data_size % (pattern_data_width//8) == 0, \
+        #         'Pattern data memory size must be multiple of {} bytes'.format(pattern_data_width//8)
 
-            self.submodules.pattern_mem = PatternMemory(
-                data_width = pattern_data_width,
-                mem_depth  = pattern_length)
-            self.add_memory(self.pattern_mem.data, name='pattern_data', origin=0x20000000)
-            self.add_memory(self.pattern_mem.addr, name='pattern_addr', origin=0x21000000)
-            self.logger.info('{}: Length: {}, Data Width: {}-bit, Address width: {}-bit'.format(
-                colorer('BIST pattern'), colorer(pattern_length), colorer(pattern_data_width), colorer(32)))
+        #     self.submodules.pattern_mem = PatternMemory(
+        #         data_width = pattern_data_width,
+        #         mem_depth  = pattern_length)
+        #     self.add_memory(self.pattern_mem.data, name='pattern_data', origin=0x20000000)
+        #     self.add_memory(self.pattern_mem.addr, name='pattern_addr', origin=0x21000000)
+        #     self.logger.info('{}: Length: {}, Data Width: {}-bit, Address width: {}-bit'.format(
+        #         colorer('BIST pattern'), colorer(pattern_length), colorer(pattern_data_width), colorer(32)))
 
-            assert controller_settings.address_mapping == 'ROW_BANK_COL'
-            row_offset = controller_settings.geom.bankbits + controller_settings.geom.colbits
-            inversion_kwargs = dict(
-                rowbits   = int(self.args.bist_inversion_rowbits, 0),
-                row_shift = row_offset - self.sdram.controller.interface.address_align,
-            )
+        #     assert controller_settings.address_mapping == 'ROW_BANK_COL'
+        #     row_offset = controller_settings.geom.bankbits + controller_settings.geom.colbits
+        #     inversion_kwargs = dict(
+        #         rowbits   = int(self.args.bist_inversion_rowbits, 0),
+        #         row_shift = row_offset - self.sdram.controller.interface.address_align,
+        #     )
 
-            # Writer
-            dram_wr_port = self.sdram.crossbar.get_port()
-            self.submodules.writer = Writer(dram_wr_port, self.pattern_mem, **inversion_kwargs)
-            self.writer.add_csrs()
-            self.add_csr('writer')
+        #     # Writer
+        #     dram_wr_port = self.sdram.crossbar.get_port()
+        #     self.submodules.writer = Writer(dram_wr_port, self.pattern_mem, **inversion_kwargs)
+        #     self.writer.add_csrs()
+        #     self.add_csr('writer')
 
-            # Reader
-            dram_rd_port = self.sdram.crossbar.get_port()
-            self.submodules.reader = Reader(dram_rd_port, self.pattern_mem, **inversion_kwargs)
-            self.reader.add_csrs()
-            self.add_csr('reader')
+        #     # Reader
+        #     dram_rd_port = self.sdram.crossbar.get_port()
+        #     self.submodules.reader = Reader(dram_rd_port, self.pattern_mem, **inversion_kwargs)
+        #     self.reader.add_csrs()
+        #     self.add_csr('reader')
 
-            assert pattern_data_width == dram_wr_port.data_width
-            assert pattern_data_width == dram_rd_port.data_width
+        #     assert pattern_data_width == dram_wr_port.data_width
+        #     assert pattern_data_width == dram_rd_port.data_width
 
-        # Payload executor -------------------------------------------------------------------------
-        if not args.no_payload_executor:
-            # TODO: disconnect bus during payload execution
-            phy_settings = self.sdram.controller.settings.phy
+        # # Payload executor -------------------------------------------------------------------------
+        # if not args.no_payload_executor:
+        #     # TODO: disconnect bus during payload execution
+        #     phy_settings = self.sdram.controller.settings.phy
 
-            scratchpad_width = phy_settings.dfi_databits * phy_settings.nphases
-            payload_size = int(args.payload_size, 0)
-            scratchpad_size = int(args.scratchpad_size, 0)
-            assert payload_size % 4 == 0, 'Payload memory size must be multiple of 4 bytes'
-            assert scratchpad_size % (scratchpad_width//8) == 0, \
-                'Scratchpad memory size must be multiple of {} bytes'.format(scratchpad_width//8)
+        #     scratchpad_width = phy_settings.dfi_databits * phy_settings.nphases
+        #     payload_size = int(args.payload_size, 0)
+        #     scratchpad_size = int(args.scratchpad_size, 0)
+        #     assert payload_size % 4 == 0, 'Payload memory size must be multiple of 4 bytes'
+        #     assert scratchpad_size % (scratchpad_width//8) == 0, \
+        #         'Scratchpad memory size must be multiple of {} bytes'.format(scratchpad_width//8)
 
-            scratchpad_depth = scratchpad_size//(scratchpad_width//8)
-            payload_mem    = Memory(32, payload_size//4)
-            scratchpad_mem = Memory(scratchpad_width, scratchpad_depth)
-            self.specials += payload_mem, scratchpad_mem
+        #     scratchpad_depth = scratchpad_size//(scratchpad_width//8)
+        #     payload_mem    = Memory(32, payload_size//4)
+        #     scratchpad_mem = Memory(scratchpad_width, scratchpad_depth)
+        #     self.specials += payload_mem, scratchpad_mem
 
-            self.add_memory(payload_mem,    name='payload',    origin=0x30000000)
-            self.add_memory(scratchpad_mem, name='scratchpad', origin=0x31000000, mode='r')
-            self.logger.info('{}: Length: {}, Data Width: {}-bit'.format(
-                colorer('Instruction payload'), colorer(payload_size//4), colorer(32)))
-            self.logger.info('{}: Length: {}, Data Width: {}-bit'.format(
-                colorer('Scratchpad memory'), colorer(scratchpad_depth), colorer(scratchpad_width)))
+        #     self.add_memory(payload_mem,    name='payload',    origin=0x30000000)
+        #     self.add_memory(scratchpad_mem, name='scratchpad', origin=0x31000000, mode='r')
+        #     self.logger.info('{}: Length: {}, Data Width: {}-bit'.format(
+        #         colorer('Instruction payload'), colorer(payload_size//4), colorer(32)))
+        #     self.logger.info('{}: Length: {}, Data Width: {}-bit'.format(
+        #         colorer('Scratchpad memory'), colorer(scratchpad_depth), colorer(scratchpad_width)))
 
-            self.submodules.dfi_switch = DFISwitch(
-                with_refresh    = self.sdram.controller.settings.with_refresh,
-                dfii            = self.sdram.dfii,
-                refresher_reset = self.sdram.controller.refresher.reset,
-            )
-            self.dfi_switch.add_csrs()
-            self.add_csr('dfi_switch')
+        #     self.submodules.dfi_switch = DFISwitch(
+        #         with_refresh    = self.sdram.controller.settings.with_refresh,
+        #         dfii            = self.sdram.dfii,
+        #         refresher_reset = self.sdram.controller.refresher.reset,
+        #     )
+        #     self.dfi_switch.add_csrs()
+        #     self.add_csr('dfi_switch')
 
-            self.submodules.payload_executor = PayloadExecutor(
-                mem_payload    = payload_mem,
-                mem_scratchpad = scratchpad_mem,
-                dfi_switch     = self.dfi_switch,
-                nranks         = self.sdram.controller.settings.phy.nranks,
-                bankbits       = self.sdram.controller.settings.geom.bankbits,
-                rowbits        = self.sdram.controller.settings.geom.rowbits,
-                colbits        = self.sdram.controller.settings.geom.colbits,
-                rdphase        = self.sdram.controller.settings.phy.rdphase,
-            )
-            self.payload_executor.add_csrs()
-            self.add_csr('payload_executor')
+        #     self.submodules.payload_executor = PayloadExecutor(
+        #         mem_payload    = payload_mem,
+        #         mem_scratchpad = scratchpad_mem,
+        #         dfi_switch     = self.dfi_switch,
+        #         nranks         = self.sdram.controller.settings.phy.nranks,
+        #         bankbits       = self.sdram.controller.settings.geom.bankbits,
+        #         rowbits        = self.sdram.controller.settings.geom.rowbits,
+        #         colbits        = self.sdram.controller.settings.geom.colbits,
+        #         rdphase        = self.sdram.controller.settings.phy.rdphase,
+        #     )
+        #     self.payload_executor.add_csrs()
+        #     self.add_csr('payload_executor')
 
     def add_memory(self, mem, *, name, origin, mode='rw'):
         ram = wishbone.SRAM(mem,
@@ -479,7 +479,7 @@ def configure_generated_files(builder, args, target_name):
     # CSR location definitions
     builder.csr_csv = os.path.join(builder.output_dir, 'csr.csv')
     # DRAM initialization sequence
-    builder.soc.generate_sdram_phy_py_header(os.path.join(builder.output_dir, "sdram_init.py"))
+    # builder.soc.generate_sdram_phy_py_header(os.path.join(builder.output_dir, "sdram_init.py"))
     # Target configuration
     with open(os.path.join(builder.output_dir, 'defs.csv'), 'w', newline='') as f:
         writer = csv.writer(f)
@@ -491,8 +491,8 @@ def configure_generated_files(builder, args, target_name):
             ('SYS_CLK_FREQ', args.sys_clk_freq),
         ])
     # LiteDRAM settings (controller, phy, geom, timing)
-    with open(os.path.join(builder.output_dir, 'litedram_settings.json'), 'w') as f:
-        json.dump(builder.soc.sdram.controller.settings, f, cls=LiteDRAMSettingsEncoder, indent=4)
+    # with open(os.path.join(builder.output_dir, 'litedram_settings.json'), 'w') as f:
+    #     json.dump(builder.soc.sdram.controller.settings, f, cls=LiteDRAMSettingsEncoder, indent=4)
 
 def run(args, builder, build_kwargs, target_name):
     # Generate files in the build directory
