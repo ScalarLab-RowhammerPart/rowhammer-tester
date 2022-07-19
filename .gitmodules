@@ -1,6 +1,3 @@
-[submodule "litedram"]
-	path = third_party/litedram
-	url = https://github.com/enjoy-digital/litedram.git
 [submodule "liteeth"]
 	path = third_party/liteeth
 	url = https://github.com/enjoy-digital/liteeth.git
@@ -10,9 +7,6 @@
 [submodule "litescope"]
 	path = third_party/litescope
 	url = https://github.com/enjoy-digital/litescope.git
-[submodule "litex"]
-	path = third_party/litex
-	url = https://github.com/enjoy-digital/litex.git
 [submodule "migen"]
 	path = third_party/migen
 	url = https://github.com/m-labs/migen
@@ -39,3 +33,9 @@
 [submodule "third_party/pythondata-software-picolibc"]
 	path = third_party/pythondata-software-picolibc
 	url = https://github.com/litex-hub/pythondata-software-picolibc.git
+[submodule "third_party/litex"]
+	path = third_party/litex
+	url = https://github.com/ScalarLab-RowhammerPart/litex.git
+[submodule "third_party/litedram"]
+	path = third_party/litedram
+	url = https://github.com/ScalarLab-RowhammerPart/litedram.git
