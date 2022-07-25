@@ -8,8 +8,14 @@ else
 OPTIM := -O2 -DNDEBUG
 endif
 
+SERVER ?= 0
+ifeq ($(SERVER),TCP)
+SERVER_OPT := -DTCP_SERVER
+endif
+
+
 CC := aarch64-linux-gnu-gcc
-CFLAGS := $(OPTIM) -Wall -Wextra -Werror
+CFLAGS := $(OPTIM) $(SERVER_OPT) -Wall -Wextra -Werror
 
 BUILD_DIR = build
 OBJECTS := $(SOURCES:%.c=$(BUILD_DIR)/%.o)

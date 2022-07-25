@@ -10,7 +10,7 @@
 struct args {
     off_t pl_mem_base;
     size_t pl_mem_size;
-    int udp_port;
+    int server_port;
     size_t server_buf_size;
     bool etherbone_abort;
 };

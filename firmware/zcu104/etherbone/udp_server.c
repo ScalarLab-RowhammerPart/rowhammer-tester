@@ -1,21 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <assert.h>
-
 #include "udp_server.h"
 
-struct udp_server {
-    struct sockaddr_in addr;
-    int socket_fd;
-    char *buf;
-};
-
-int udp_server_run(void *arg, udp_server_callback callback, int port, size_t buf_size) {
-    struct udp_server server = {0};
+int udp_server_run(void *arg, socket_server_callback callback, int port, size_t buf_size) {
+    struct socket_server server = {0};
 
     // allocate buffer
     if ((server.buf = malloc(buf_size)) == NULL) {

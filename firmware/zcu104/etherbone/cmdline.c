@@ -3,7 +3,7 @@
 struct args cmdline_args = {
     .pl_mem_base     = 0x400000000,
     .pl_mem_size     = 0x100000000,
-    .udp_port        = 1234,
+    .server_port     = 1234,
     .server_buf_size = 4096,
     .etherbone_abort = false,
 };
@@ -43,14 +43,14 @@ void parse_args(int argc, char *argv[]) {
                 "Options:\n"
                 "  --pl-mem-base      Base physical address of memory connected to PL (default: 0x%012lx)\n"
                 "  --pl-mem-size      Size of the PL memory area (default: 0x%012lx)\n"
-                "  --udp-port         UDP port to use (default: %d)\n"
+                "  --port             Server port to use (default: %d)\n"
                 "  --server-buf-size  Size of internal server buffer (default: %lu)\n"
                 "  --etherbone-abort  Abort on EtherBone packet errors (default: false)\n"
                 ;
             printf(usage, argv[0],
                     cmdline_args.pl_mem_base,
                     cmdline_args.pl_mem_size,
-                    cmdline_args.udp_port,
+                    cmdline_args.server_port,
                     cmdline_args.server_buf_size);
             exit(0);
         }
@@ -63,7 +63,7 @@ void parse_args(int argc, char *argv[]) {
         int found = 0;
         PARSE_ARG(cmdline_args.pl_mem_base,     "--pl-mem-base");
         PARSE_ARG(cmdline_args.pl_mem_size,     "--pl-mem-size");
-        PARSE_ARG(cmdline_args.udp_port,        "--udp-port");
+        PARSE_ARG(cmdline_args.server_port,     "--port");
         PARSE_ARG(cmdline_args.server_buf_size, "--server-buf-size");
         PARSE_BOOLEAN_ARG(cmdline_args.etherbone_abort, "--etherbone-abort");
         if (found == 0) {

@@ -4,7 +4,9 @@
 #include <string.h>
 
 #include "pl_mmap.h"
+#include "socket_server.h"
 #include "udp_server.h"
+#include "tcp_server.h"
 #include "etherbone.h"
 #include "cmdline.h"
 #include "debug.h"
@@ -37,13 +39,19 @@ int run_server(struct pl_mmap *pl_mem) {
         .write = &pl_mem_write,
         .read = &pl_mem_read,
     };
-    udp_server_callback callback;
+    socket_server_callback callback;
     if (cmdline_args.etherbone_abort) {
-        callback = (udp_server_callback) &etherbone_callback;
+        callback = (socket_server_callback) &etherbone_callback;
     } else {
-        callback = (udp_server_callback) &etherbone_noerror_callback;
+        callback = (socket_server_callback) &etherbone_noerror_callback;
     }
-    return udp_server_run(&mem, callback, cmdline_args.udp_port, cmdline_args.server_buf_size);
+
+#ifdef TCP_SERVER
+    return tcp_server_run(&mem, callback, cmdline_args.server_port, cmdline_args.server_buf_size);
+#else
+    return udp_server_run(&mem, callback, cmdline_args.server_port, cmdline_args.server_buf_size);
+#endif /* TCP_SERVER */
+
 }
 
 int main(int argc, char *argv[])
