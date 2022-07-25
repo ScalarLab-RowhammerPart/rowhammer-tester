@@ -1,17 +1,13 @@
 TARGET := zcu104_etherbone
 SOURCES := $(wildcard *.c)
 
-DEBUG ?= 0
+DEBUG ?= 1
 ifeq ($(DEBUG),1)
 OPTIM := -Og -g
 else
 OPTIM := -O2 -DNDEBUG
 endif
-
-SERVER ?= 0
-ifeq ($(SERVER),TCP)
 SERVER_OPT := -DTCP_SERVER
-endif
 
 
 CC := aarch64-linux-gnu-gcc

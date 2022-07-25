@@ -59,8 +59,13 @@ ifeq ($(TARGET),lpddr4_test_board)
 endif
 endif
 
-srv: FORCE
+srv: srv-udp
+
+srv-udp: FORCE
 	litex_server --udp --udp-ip $(IP_ADDRESS) --udp-port $(UDP_PORT)
+
+srv-tcp: FORCE
+	litex_server --tcp --tcp-ip $(IP_ADDRESS) --tcp-port $(UDP_PORT)
 
 doc: FORCE
 	python -m sphinx -b html doc build/documentation/html
