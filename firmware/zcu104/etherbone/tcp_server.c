@@ -23,7 +23,7 @@ int tcp_server_run(void *arg, socket_server_callback callback, int port, size_t 
         perror("setsockopt(SO_REUSEADDR) failed");
         goto error;
     }
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable)) < 0)  {
+    if (setsockopt(server.socket_fd, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(enable)) < 0)  {
         perror("setsockopt(SO_REUSEPORT) failed");
         goto error;
     }
@@ -69,7 +69,7 @@ int tcp_server_run(void *arg, socket_server_callback callback, int port, size_t 
         int response_len = callback(arg, server.buf, buf_size, received_len);
         if (response_len < 0) {
             fprintf(stderr, "Error while processing a packet from %s:%d\n",
-                    inet_ntoa(client.addr), port);
+                    inet_ntoa(client.addr.sin_addr), ntohs(client.addr.sin_port));
             goto error;
         }
 
@@ -81,9 +81,9 @@ int tcp_server_run(void *arg, socket_server_callback callback, int port, size_t 
         dbg_printf("Sending %d byte response\n", response_len);
         dbg_memdump(server.buf, response_len);
 
-        if (sendto(client.socket_fd, server.buf, response_len, 0) == -1) {
+        if (send(client.socket_fd, server.buf, response_len, 0) == -1) {
             char msg[100];
-            sprintf(msg, "Failed to reply to %s:%d", inet_ntoa(client.addr), port);
+            sprintf(msg, "Failed to reply to %s:%d", inet_ntoa(client.addr.sin_addr), ntohs(client.addr.sin_port));
             perror(msg);
             goto error;
         }

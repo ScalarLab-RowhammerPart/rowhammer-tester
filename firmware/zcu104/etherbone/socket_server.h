@@ -1,7 +1,21 @@
 #ifndef SOCKET_SERVER_H
 #define SOCKET_SERVER_H
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <assert.h>
+
 #include "debug.h"
+
+struct socket_server {
+    struct sockaddr_in addr;
+    int socket_fd;
+    char *buf;
+};
 
 // Callback function called on incoming packets
 //
