@@ -19,3 +19,35 @@ class MTA4ATF1G64HZ(DDR4Module):
         "2666": _SpeedgradeTimings(tRP=13.75, tRCD=13.75, tWR=15, tRFC=trfc, tFAW=(28, 30), tRAS=32),
     }
     speedgrade_timings["default"] = speedgrade_timings["2666"]
+
+class M471A5244CB0(DDR4Module): # M471A5244CB0-CTD
+    # geometry
+    ngroupbanks = 4
+    ngroups     = 2
+    nbanks      = ngroups * ngroupbanks
+    nrows       = 65536
+    ncols       = 1024
+    # timings
+    trefi = {"1x": 64e6/8192,   "2x": (64e6/8192)/2, "4x": (64e6/8192)/4}
+    trfc  = {"1x": (None, 350), "2x": (None, 260),   "4x": (None, 160)}
+    technology_timings = _TechnologyTimings(tREFI=trefi, tWTR=(4, 7.5), tCCD=(4, None), tRRD=(4, 6.4), tZQCS=(128, None))
+    speedgrade_timings = {
+        "2666": _SpeedgradeTimings(tRP=14.25, tRCD=14.25, tWR=15, tRFC=trfc, tFAW=(28, 30), tRAS=32),
+    }
+    speedgrade_timings["default"] = speedgrade_timings["2666"]
+
+class M471A1K43CB1(DDR4Module): # M471A1K43CB1-CTD
+    # geometry
+    ngroupbanks = 4
+    ngroups     = 4
+    nbanks      = ngroups * ngroupbanks
+    nrows       = 65536
+    ncols       = 1024
+    # timings
+    trefi = {"1x": 64e6/8192,   "2x": (64e6/8192)/2, "4x": (64e6/8192)/4}
+    trfc  = {"1x": (None, 350), "2x": (None, 260),   "4x": (None, 160)}
+    technology_timings = _TechnologyTimings(tREFI=trefi, tWTR=(4, 7.5), tCCD=(4, None), tRRD=(4, 6.4), tZQCS=(128, None))
+    speedgrade_timings = {
+        "2666": _SpeedgradeTimings(tRP=14.25, tRCD=14.25, tWR=15, tRFC=trfc, tFAW=(28, 30), tRAS=32),
+    }
+    speedgrade_timings["default"] = speedgrade_timings["2666"]

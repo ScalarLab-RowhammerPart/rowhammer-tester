@@ -258,7 +258,7 @@ def main():
     parser = common.ArgumentParser(
         description  = "LiteX SoC on ZCU104",
         sys_clk_freq = '125e6',
-        module       = 'MTA4ATF51264HZ'
+        module       = 'M471A5244CB0'
     )
     g = parser.add_argument_group(title="ZCU104")
     g.add_argument("--iodelay-clk-freq", type=float, help="Use given exact IODELAYCTRL reference clock frequency")
