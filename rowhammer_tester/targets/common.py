@@ -109,7 +109,7 @@ class RowHammerSoC(SoCCore):
 
         # SoCCore ----------------------------------------------------------------------------------
         SoCCore.__init__(self, self.platform, sys_clk_freq,
-            ident          = "LiteX Row Hammer Tester SoC on {}, git: {}".format(self.platform.device, githash),
+            ident          = "Row Hammer Tester SoC on {}, git: {}".format(self.platform.device, githash),
             integrated_rom_mode = 'rw' if args.rw_bios_mem else 'r',
             **kwargs)
 
@@ -405,8 +405,8 @@ def get_sdram_module(name):
     if upstream is None and local is None:
         raise RuntimeError(f'Could not find module {name}')
     if upstream is not None and local is not None:
-        log.warning(f'Module {name} defined both in LiteDRAM and in litex-rowhammer-tester!'
-            ' Consider removing the definition in litex-rowhammer-tester.')
+        log.warning(f'Module {name} defined both in LiteDRAM and in rowhammer-tester!'
+            ' Consider removing the definition in rowhammer-tester.')
     if local is not None:
         log.warning(f'Using module {name} defined locally. Should be moved to LiteDRAM.')
         module = local
@@ -509,7 +509,7 @@ def run(args, builder, build_kwargs, target_name):
     if args.docs:
         doc.generate_docs(builder.soc,
             base_dir     = "build/documentation",
-            project_name = "LiteX Row Hammer Tester",
+            project_name = "Row Hammer Tester",
             author       = "Antmicro")
 
     if args.load:
