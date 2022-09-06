@@ -42,11 +42,11 @@ class RowHammerDMA(Module, AutoCSR, AutoDoc, ModuleDoc):
             )
 
         address = Signal(address_width)
-        self.comb += If(counter2 == self.dilution,
+        self.comb += If(counter2 == self.dilution.storage,
             address.eq(self.address3.storage)
-        ).Elif(counter2 == self.dilution + 1,
+        ).Elif(counter2 == self.dilution.storage + 1,
             address.eq(self.address4.storage),
-            self.counter2.eq(0)
+            counter2.eq(0)
         ).Else(
             Case(counter1[0], {
                 0: address.eq(self.address1.storage),
